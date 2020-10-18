@@ -1,44 +1,79 @@
-
-//This is a programme to check if 2 strings are scrambled or not. It uses the concept of MCM.
-class Solution {
-public:
-    unordered_map<string,bool>mp;
-    bool scramble(string s1,string s2)
-    {
-       
-        if(s1==s2)
-            return true;
-        if(s1.length()<=1)
-            return false;
-        string key=s1+" "+s2;
-        if(mp.find(key)!=mp.end())
-            return mp[key];
-        int n=s1.length();
-      
-        bool flag=false;
-        for(int i=1;i<=n-1;i++)
-        {
-            
-           
-            if((scramble(s1.substr(0,i),s2.substr(n-i,i)) && 
-              scramble(s1.substr(i,n-i),s2.substr(0,n-i)) )||
-               (scramble(s1.substr(0,i),s2.substr(0,i)) && 
-              scramble(s1.substr(i,n-i),s2.substr(i,n-i)) )
-              )
-            { flag=true;
-                 break;
-            }
-        }
-        return mp[key]=flag;
-    }
-    bool isScramble(string s1, string s2) {
-        if(s1.length()!=s2.length())
-            return false;
-        if(s1.length()==0 && s2.length()==0)
-            return true;
-        mp.clear();
-        return scramble(s1,s2);
-        
-        
-    }
-};
+// C++ Program to check if a 
+// given string is a scrambled 
+// form of another string 
+  
+#include <bits/stdc++.h> 
+using namespace std; 
+  
+bool isScramble(string S1, string S2) 
+{ 
+    // Strings of non-equal length 
+    // cant' be scramble strings 
+    if (S1.length() != S2.length()) { 
+        return false; 
+    } 
+  
+    int n = S1.length(); 
+  
+    // Empty strings are scramble strings 
+    if (n == 0) { 
+        return true; 
+    } 
+  
+    // Equal strings are scramble strings 
+    if (S1 == S2) { 
+        return true; 
+    } 
+  
+    // Check for the condition of anagram 
+    string copy_S1 = S1, copy_S2 = S2; 
+  
+    sort(copy_S1.begin(), copy_S1.end()); 
+    sort(copy_S2.begin(), copy_S2.end()); 
+  
+    if (copy_S1 != copy_S2) { 
+        return false; 
+    } 
+  
+    for (int i = 1; i < n; i++) { 
+  
+        // Check if S2[0...i] is a scrambled 
+        // string of S1[0...i] and if S2[i+1...n] 
+        // is a scrambled string of S1[i+1...n] 
+        if (isScramble(S1.substr(0, i), S2.substr(0, i)) 
+            && isScramble(S1.substr(i, n - i), 
+                          S2.substr(i, n - i))) { 
+            return true; 
+        } 
+  
+        // Check if S2[0...i] is a scrambled 
+        // string of S1[n-i...n] and S2[i+1...n] 
+        // is a scramble string of S1[0...n-i-1] 
+        if (isScramble(S1.substr(0, i), 
+                       S2.substr(n - i, i)) 
+            && isScramble(S1.substr(i, n - i), 
+                          S2.substr(0, n - i))) { 
+            return true; 
+        } 
+    } 
+  
+    // If none of the above 
+    // conditions are satisfied 
+    return false; 
+} 
+  
+// Driver Code 
+int main() 
+{ 
+    string S1 = "coder"; 
+    string S2 = "ocred"; 
+  
+    if (isScramble(S1, S2)) { 
+        cout << "Yes"; 
+    } 
+    else { 
+        cout << "No"; 
+    } 
+  
+    return 0; 
+}
