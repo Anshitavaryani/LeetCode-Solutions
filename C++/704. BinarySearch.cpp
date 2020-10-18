@@ -1,42 +1,42 @@
-/* BINARY SEARCH */
+#include <iostream>
+using namespace std;
 
-/*
-Given a sorted (in ascending order) integer array nums of n elements and a target value, write a function to search target in nums. If target exists, then return its index, otherwise return -1.
-*/
+int main()
+{
+	int count, i, arr[30], num, first, last, middle;
+	cout<<"how many elements would you like to enter?:"; 
+        cin>>count;
 
-/*
-Example 1:
+	for (i=0; i<count; i++)
+	{
+		cout<<"Enter number "<<(i+1)<<": "; 
+                cin>>arr[i];
+	}
+	cout<<"Enter the number that you want to search:"; 
+        cin>>num;
+	first = 0;
+	last = count-1;
+	middle = (first+last)/2;
+	while (first <= last)
+	{
+	   if(arr[middle] < num)
+	   {
+		first = middle + 1;
 
-Input: nums = [-1,0,3,5,9,12], target = 9
-Output: 4
-Explanation: 9 exists in nums and its index is 4
-
-Example 2:
-
-Input: nums = [-1,0,3,5,9,12], target = 2
-Output: -1
-Explanation: 2 does not exist in nums so return -1
-*/
-
-class Solution {
-public:
-    int search(vector<int>& nums, int target) {
-        int _size = nums.size();
-        int _left = 0;
-        int _right = _size-1;
-        
-        int _middle;
-        while(_left <= _right)
-        {
-            _middle = (_left+_right)/2;
-            if(target > nums[_middle])
-                _left = _middle+1;
-            else if(target < nums[_middle])
-                _right = _middle-1;
-            else
-                return _middle;
-        }
-        
-        return -1;
-    }
-};
+	   }
+	   else if(arr[middle] == num)
+	   {
+		cout<<num<<" found in the array at the location "<<middle+1<<"\n"; 
+                break; 
+           } 
+           else { 
+                last = middle - 1; 
+           } 
+           middle = (first + last)/2; 
+        } 
+        if(first > last)
+	{
+	   cout<<num<<" not found in the array";
+	}
+	return 0;
+}
