@@ -9,76 +9,103 @@ Each transformed word must exist in the word list.
 
 /**
 Approach:
-This is a search problem, the key ide is to make the graph and use bredth first search to find the shortest distance from starting word to required word.
+This is a search problem, the key idea is to make the graph and use bredth first search to find the shortest distance from starting word to required word.
 **/
 
-class Solution {
-public:
-    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-        unordered_map<string, list<string> > l;
-        
-        // Preprocessing Step            
-        for(auto word: wordList){ // to make graph
-            for(int i = 0; i<word.size(); i++){
-                string temp = word;
-                temp[i] = '*';
-                if(l.find(temp) == l.end()){
-                    list<string> a;
-                    a.push_back(word);
-                    l[temp] = a;
-                }
-                else{
-                    l[temp].push_back(word);
-                }
-            }
-        }
-        
-        // Search for shortest path
-        queue<string> q;
-        queue<int> dist;
-        
-        q.push(beginWord);
-        dist.push(1);
-        
-        unordered_map<string, bool> vis;
-        
-        for(auto word: wordList){
-            vis[word] = false;
-        }
-        
-        vis[beginWord] = true;
-        
-        int ans = 0;
-        
-        while(!q.empty()){
-            string u = q.front(); q.pop();
-            
-            int d = dist.front(); dist.pop();
-            
-            //cout<<u<<" "<<d<<endl;
-            
-            for(int i = 0; i<u.size(); i++){ // generating intermediate words
-                string temp = u;
-                
-                temp[i] = '*';
-                
-                for(auto v: l[temp]){ // finding neighbours for temp
-                    if(v == endWord){
-                        ans = d + 1;
-                        return ans;
-                    }
-                    if(!vis[v]){
-                        vis[v] = true;
-                        q.push(v);
-                        dist.push(d+1);
-                    }
-                }
-                
-            }
-            
-        }
-        
-        
-        return ans;
-    }
-};
+#include<iostream>
+#include<vector>
+#include<string>
+#include<unordered_map>
+#include<unordered_set>
+#include<queue>
+
+using namespace std;
+
+int ladderLength_bfs(string beginWord, string endWord, vector<string>& wordList) 
+{
+	unordered_set<string> wordSet(wordList.begin(), wordList.end());
+	unordered_map<string, int> pathCnt{{{beginWord, 1}}};
+	queue<string> q{{beginWord}};
+	
+	while (!q.empty()) 
+	{
+		string word = q.front(); q.pop();
+		for (int i = 0; i < word.size(); ++i) 
+		{
+			string newWord = word;
+			for (char ch = 'a'; ch <= 'z'; ++ch) 
+			{
+				newWord[i] = ch;
+				if (wordSet.count(newWord) && newWord == endWord) 
+					return pathCnt[word] + 1;
+				if (wordSet.count(newWord) && !pathCnt.count(newWord)) 
+				{
+					q.push(newWord);
+					pathCnt[newWord] = pathCnt[word] + 1;
+				}   
+			}
+		}
+	}
+	return 0;
+}
+
+int ladderLength_two_end_bfs(string beginWord, string endWord, vector<string>& wordList) 
+{
+	unordered_set<string> dict(wordList.begin(), wordList.end());
+	if (dict.count(endWord) == 0) return 0;
+
+	unordered_set<string> string1 = {beginWord};
+	unordered_set<string> string2 = {endWord};
+	dict.erase(endWord);
+	int step = 0;
+
+	while (!string1.empty() && !string2.empty()) 
+	{
+	    step++;
+	    if (string1.size() > string2.size()) swap(string1, string2);
+	    unordered_set<string> temp;
+
+	    for (auto word : string1) 
+	    {
+	        for (int i=0; i<word.size(); i++) 
+	        {
+	            char oldChar = word[i];
+	            for (char c='a'; c<='z'; c++) 
+	            {
+	                if (c == oldChar) continue;
+	                string newWord = word;
+	                newWord[i] = c;
+	                if (string2.count(newWord)) 
+	                	return step+1;
+
+	                if (dict.count(newWord)) 
+	                {
+	                    temp.insert(newWord);
+	                    dict.erase(newWord);
+	                }
+	            }
+	        }
+	    }
+	    swap(string1, temp);
+	}
+	return 0;
+}
+
+
+int main() 
+{ 
+    vector<string> wordList; 
+    wordList.push_back("hot");
+    wordList.push_back("dot");
+    wordList.push_back("dog");
+    wordList.push_back("lot");
+    wordList.push_back("log");
+    wordList.push_back("cog");
+    string beginWord  = "hit"; 
+    string endWord  = "cog"; 
+
+    cout << "Length of shortest chain using one end BFS is: "<< ladderLength_bfs(beginWord, endWord, wordList)<<endl;  
+   	cout << "Length of shortest chain using two end BFS is: "<< ladderLength_two_end_bfs(beginWord, endWord, wordList)<<endl;  
+
+    return 0;  
+}
